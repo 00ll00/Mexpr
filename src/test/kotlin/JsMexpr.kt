@@ -19,17 +19,17 @@ fun main() {
 
     // 字符串拼接运算
     val CatStr = object: Op {
-        override val level = Int.MAX_VALUE
+        override val level = Int.MIN_VALUE  // 仅当作为最外层操作时可以不加括号，否则必须被装入括号形成一个整体
         override fun canForward(left: Int, right: Int) = right >= 0
         override fun forward(left: Int, right: Int) = "$left$right".toInt()
         // 将连续的字符串连接运算合并到一起
         override fun buildText(left: Mexpr, right: Mexpr): String {
-            val leftStr = if (left.op == this) left.text.substring(4..left.text.length - 5) else left.wrapSplitPlus(4)
-            val rightStr = if (right.op == this) right.text.substring(4..right.text.length - 5) else right.wrapSplitPlus(4)
-            return "([]+${leftStr}+${rightStr}-[])"
+            val leftStr = if (left.op == this) left.text.substring(3..left.text.length - 4) else left.wrapSplitPlus(4)
+            val rightStr = if (right.op == this) right.text.substring(3..right.text.length - 4) else right.wrapSplitPlus(4)
+            return "[]+${leftStr}+${rightStr}-[]"
         }
         // 改用表达式文本长度衡量重量，使表达式长度尽可能短
-        override fun calcMass(left: Mexpr, right: Mexpr) = left.text.length + right.text.length + if (left.op == this || right.op == this) 0 else 8
+        override fun calcMass(left: Mexpr, right: Mexpr) = left.text.length + right.text.length + if (left.op == this || right.op == this) 0 else 6
     }
 
     val items = arrayListOf(
